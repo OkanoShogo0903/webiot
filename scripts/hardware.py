@@ -2,7 +2,7 @@
 class HardwareController():
     def __init__(self):
         pass
-    def predict(self):
+    def predict(self, hoge):
         return None
 
 
