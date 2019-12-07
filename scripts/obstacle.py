@@ -10,6 +10,10 @@ class ObstacleController():
 
     def predict(self,image):
         #image = cv2.resize(cv2.imread('sample_cropped_fixed_marked.jpg',0),(1280,720))
+        if len(image.shape) == 3:
+            image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY), (1280,720)
+        image = cv2.resize(image,(1280,720))
+            
         templete = cv2.imread('mark.jpeg',0)
         image = iplib.crop(image)
 
@@ -50,17 +54,7 @@ class ObstacleController():
         box_grid = np.where(box_existing_map == np.amax(box_existing_map))
         box_grid = [box_grid[0][0],box_grid[1][0]]
 
-        #結果の出力
-        print('-------------map-------------')
-        print(obstacle_grid_map)
-        print('-----box point-----')
-        print(box_existing_map)
-        print('-----box grid-----')
-        print(box_grid)
-        print('-----box angle-----')
-        print(box_angle)
-        print('-----box point-----')
-        print(box_point)
+
         return (obstacle_grid_map, box_grid, box_point, box_angle)
         '''
         obstacle_grid_map: 障害物マップ（グリッド）
@@ -73,5 +67,13 @@ if __name__ == '__main__':
 
     test_instance = ObstacleController()
     image = cv2.resize(cv2.imread('rotate_sample.jpg',0),(1280,720))
-    test_instance.predict(image)
+    obstacle_grid_map, box_grid, box_point, box_angle = test_instance.predict(image)
+    print('-------------map-------------')
+    print(obstacle_grid_map)
+    print('-----box grid-----')
+    print(box_grid)
+    print('-----box angle-----')
+    print(box_angle)
+    print('-----box point-----')
+    print(box_point)
 
