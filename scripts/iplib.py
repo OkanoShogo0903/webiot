@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import numpy as np
 import cv2
+from cv2 import aruco
 
 threshold = 127
 
@@ -28,6 +29,11 @@ def object_detection(image):
     #################
 
     return grid_0x
+
+
+
+
+
 
 def crop(image):
     height, width = image.shape
@@ -61,6 +67,38 @@ def box_detection(img,temp):
 
     return existing_rate
 
+
+def box_point_to_grid(img,box_point):
+    #マッチングテンプレートを実行
+    #比較方法はcv2.TM_CCOEFF_NORMEDを選択
+    #result = cv2.matchTemplate(img, temp, cv2.TM_CCOEFF_NORMED)
+
+    #検出結果から検出領域の位置を取得
+    #min_val, max_val, min_loc, max_loc = cv2.minMaxLoc(result)
+    #top_left = max_loc
+    #w, h = temp.shape[::-1]
+    #bottom_right = (top_left[0] + w, top_left[1] + h)
+
+    #検出領域を四角で囲んで保存
+    #result = cv2.imread("sample_cropped_fixed_marked_02.jpg",0)
+    #result.fill(0)
+    back_img = img.copy()
+    back_img.fill(0)
+    cv2.rectangle(back_img,box_point, box_point, 255, -1)
+    cv2.imwrite('box_pointed_map.png',back_img)
+    
+    #cv2.imwrite("templete_matching_result.png", result)
+
+    splited_image = split_image(back_img)
+    existing_rate = []
+    for i in splited_image:
+        if calc_binary_rate(i) > 0:
+            existing_rate.append(1)
+        else:
+            existing_rate.append(0)
+        #existing_rate.append(int(calc_binary_rate(i)))
+
+    return existing_rate
 
 def split_image(image):
     grid_size = 120
@@ -99,3 +137,51 @@ def calc_binary_rate(image):
 
 def concat_tile(im_list_2d):
     return cv2.vconcat([cv2.hconcat(im_list_h) for im_list_h in im_list_2d])
+
+def get_ar(image):
+    # マーカーサイズ
+    marker_length = 0.056 # [m]
+    # マーカーの辞書選択
+    dictionary = aruco.getPredefinedDictionary(aruco.DICT_4X4_50)
+
+    camera_matrix = np.array([[639.87721705,   0.        , 330.12073612],
+                            [  0.        , 643.69687408, 208.61588364],
+                            [  0.        ,   0.        ,   1.        ]])
+    distortion_coeff = np.array([ 5.66942769e-02, -6.05774927e-01, -7.42066667e-03, -3.09571466e-04, 1.92386974e+00])
+
+    img = image
+    corners, ids, rejectedImgPoints = aruco.detectMarkers(img, dictionary)
+    # 可視化
+    aruco.drawDetectedMarkers(img, corners, ids, (0,255,255))
+    
+
+    if len(corners) > 0:
+        # マーカーごとに処理
+        for i, corner in enumerate(corners):
+            # rvec -> rotation vector, tvec -> translation vector
+            rvec, tvec, _ = aruco.estimatePoseSingleMarkers(corner, marker_length, camera_matrix, distortion_coeff)
+
+            # < rodoriguesからeuluerへの変換 >
+
+            # 不要なaxisを除去
+            tvec = np.squeeze(tvec)
+            rvec = np.squeeze(rvec)
+            # 回転ベクトルからrodoriguesへ変換
+            rvec_matrix = cv2.Rodrigues(rvec)
+            rvec_matrix = rvec_matrix[0] # rodoriguesから抜き出し
+            # 並進ベクトルの転置
+            transpose_tvec = tvec[np.newaxis, :].T
+            # 合成
+            proj_matrix = np.hstack((rvec_matrix, transpose_tvec))
+            # オイラー角への変換
+            euler_angle = cv2.decomposeProjectionMatrix(proj_matrix)[6] # [deg]
+            
+            #print(i)
+            if i == 3:
+
+                corner_point = corner
+                yaw = str(euler_angle[2])
+
+    corner_point = np.sum(corner_point[0],axis=0)/4
+    corner_point = tuple(corner_point.astype(np.int64))
+    return (corner_point,yaw)
