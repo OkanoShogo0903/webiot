@@ -60,7 +60,7 @@ def instruction(img, goal_grid_x, goal_grid_y):
     i = obstacle_controller.predict(img)
     j = route_controller.predict(i)
     k = hardware_controller.predict(j)
-    
+
     try:
         m5_requests.post(
                 'http://0.0.0.0:1234/post',
