@@ -54,11 +54,12 @@ def box_detection(img,temp):
     bottom_right = (top_left[0] + w, top_left[1] + h)
 
     #検出領域を四角で囲んで保存
-    result = cv2.imread("sample_cropped_fixed_marked_02.jpg",0)
+    #result = cv2.imread("sample_cropped_fixed_marked_02.jpg",0)
+    result = img.copy()
     result.fill(0)
     cv2.rectangle(result,top_left, bottom_right, 255, -1)
     
-    cv2.imwrite("templete_matching_result.png", result)
+    #cv2.imwrite("templete_matching_result.png", result)
 
     splited_image = split_image(result)
     existing_rate = []
@@ -85,7 +86,7 @@ def box_point_to_grid(img,box_point):
     back_img = img.copy()
     back_img.fill(0)
     cv2.rectangle(back_img,box_point, box_point, 255, -1)
-    cv2.imwrite('box_pointed_map.png',back_img)
+    #cv2.imwrite('box_pointed_map.png',back_img)
     
     #cv2.imwrite("templete_matching_result.png", result)
 

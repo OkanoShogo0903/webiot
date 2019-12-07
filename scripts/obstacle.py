@@ -59,7 +59,15 @@ class ObstacleController():
         print(box_grid)
         print('-----box angle-----')
         print(box_angle)
-        return (obstacle_grid_map, box_grid, box_angle)
+        print('-----box point-----')
+        print(box_point)
+        return (obstacle_grid_map, box_grid, box_point, box_angle)
+        '''
+        obstacle_grid_map: 障害物マップ（グリッド）
+        box_gird：ゴミ箱の存在位置(グリッド)
+        box_point：ゴミ箱の存在位置（座標）
+        box_angle：ゴミ箱の向いている角度
+        '''
 
 if __name__ == '__main__':
 
