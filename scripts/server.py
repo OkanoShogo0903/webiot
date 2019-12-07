@@ -15,6 +15,7 @@ from flask_api import status
 import obstacle
 import route_search
 import hardware
+import mqtt_pub
 
 
 app = Flask(__name__)
@@ -23,11 +24,13 @@ goal_x, goal_y = None, None
 
 image = None
 device = 0
+grid_size = 120
 cap = cv2.VideoCapture(device)
 
 obstacle_controller = obstacle.ObstacleController()
 route_controller = route_search.RouteController()
-hardware_controller = hardware.HardwareController()
+hardware_controller = hardware.HardwareController(cap, grid_size)
+mqtt = mqtt_pub.MqttPublisher()
 
 
 @app.route('/goal', methods=['POST'])
@@ -57,16 +60,22 @@ def instruction(img, goal_grid_x, goal_grid_y):
         @discription:
             制御対象が指定されているグリッドに向かうための制御情報を送る役目
     """
-    i = obstacle_controller.predict(img)
-    j = route_controller.predict(i)
-    k = hardware_controller.predict(j)
+    hardware_x = 60
+    hardware_y = 120
+    rotate = 270
 
-    try:
-        m5_requests.post(
-                'http://0.0.0.0:1234/post',
-                {'foo':'bar'}) 
-    except m5_requests.exceptions.ConnectionError:
-        print('ConnectionError: Check M5 Stack connection')
+    i = obstacle_controller.predict(img)
+    next_grid_coordinate = route_controller.predict()
+
+    send_pix_xy = hardware_controller.predict(
+           next_grid_coordinate[0],
+           next_grid_coordinate[1],
+           hardware_x,
+           hardware_y,
+           rotate
+           )
+
+    mqtt.publish(str(int(send_pix_xy[0]))+","+str(int(send_pix_xy[1])))
 
 
 def imageRenew():

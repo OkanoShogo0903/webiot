@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 import numpy as np
-import sys
-sys.path.remove('/opt/ros/kinetic/lib/python2.7/dist-packages') # For avoid reference to ROS's opencv.
-import cv2
+#import sys
+#sys.path.remove('/opt/ros/kinetic/lib/python2.7/dist-packages') # For avoid reference to ROS's opencv.
+#import cv2
 
 class HardwareController():
     def __init__(self, cap, grid_size):
@@ -51,3 +51,4 @@ if __name__ == '__main__':
 
     hardware_controller = HardwareController(cap, grid_size)
     k = hardware_controller.predict(direction_grid_x, direction_grid_y, hardware_x, hardware_y, 270)
+    print(str(int(k[0]))+","+str(int(k[1])))
