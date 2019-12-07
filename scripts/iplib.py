@@ -25,9 +25,8 @@ def object_detection(image):
     ################# to graphical view
     hage = np.reshape(splited_image,(6,10,120,120))
     im_tile = concat_tile(hage)
-    cv2.imwrite('result.jpg',im_tile)
+    #cv2.imwrite('result.jpg',im_tile)
     #################
-
     return grid_0x
 
 
