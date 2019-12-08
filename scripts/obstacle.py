@@ -54,7 +54,8 @@ class ObstacleController():
         box_existing_map = np.pad(box_existing_map,(1,1), 'constant',constant_values=(0,0))
         
         box_grid = np.where(box_existing_map == np.amax(box_existing_map))
-        box_grid = [box_grid[0][0],box_grid[1][0]]
+        box_grid = [box_grid[0][0]+1,box_grid[1][0]+1]
+
 
 
         return (obstacle_grid_map, box_grid, box_point, box_angle)
