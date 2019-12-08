@@ -155,7 +155,7 @@ def get_ar(image):
     aruco.drawDetectedMarkers(img, corners, ids, (0,255,255))
     
 
-    if len(corners) > 0:
+    if len(corners) > 3:
         # マーカーごとに処理
         for i, corner in enumerate(corners):
             # rvec -> rotation vector, tvec -> translation vector
@@ -182,6 +182,8 @@ def get_ar(image):
                 corner_point = corner
                 yaw = str(euler_angle[2])
 
-    corner_point = np.sum(corner_point[0],axis=0)/4
-    corner_point = tuple(corner_point.astype(np.int64))
-    return (corner_point,yaw)
+        corner_point = np.sum(corner_point[0],axis=0)/4
+        corner_point = tuple(corner_point.astype(np.int64))
+        return (corner_point,yaw)
+    else:
+        return None, None

@@ -11,7 +11,7 @@ class ObstacleController():
     def predict(self,image):
         #image = cv2.resize(cv2.imread('sample_cropped_fixed_marked.jpg',0),(1280,720))
         if len(image.shape) == 3:
-            image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY), (1280,720)
+            image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
         image = cv2.resize(image,(1280,720))
             
         templete = cv2.imread('mark.jpeg',0)
@@ -20,6 +20,8 @@ class ObstacleController():
         #ゴミ箱の座標を取得
         #box_existing_map = iplib.box_detection(image,templete)
         box_point, box_angle = iplib.get_ar(image)
+        if box_point is None:
+            return None,None,None,None
         box_angle = float(box_angle.strip('['']'))*(-1)
         #print(type(box_angle))
         box_existing_map = iplib.box_point_to_grid(image,box_point)
@@ -66,14 +68,17 @@ class ObstacleController():
 if __name__ == '__main__':
 
     test_instance = ObstacleController()
-    image = cv2.resize(cv2.imread('rotate_sample.jpg',0),(1280,720))
+    image = cv2.resize(cv2.imread('rotate_sample.jpg'),(1280,720))
     obstacle_grid_map, box_grid, box_point, box_angle = test_instance.predict(image)
-    print('-------------map-------------')
-    print(obstacle_grid_map)
-    print('-----box grid-----')
-    print(box_grid)
-    print('-----box angle-----')
-    print(box_angle)
-    print('-----box point-----')
-    print(box_point)
+    if obstacle_grid_map is not None:
+        print('-------------map-------------')
+        print(obstacle_grid_map)
+        print('-----box grid-----')
+        print(box_grid)
+        print('-----box angle-----')
+        print(box_angle)
+        print('-----box point-----')
+        print(box_point)
+    else:
+        print('missing box')
 
