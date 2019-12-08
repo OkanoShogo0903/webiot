@@ -41,8 +41,7 @@ class ObstacleController():
         # ゴミ箱のいるところを障害物なしとして処理する
         i = 0
         for e_rate in box_existing_map:
-            if e_rate is 1:
-            #if e_rate > 10:
+            if e_rate == 1:
                 obstacle_grid_map[i] = 0
             i+=1
 
@@ -52,9 +51,8 @@ class ObstacleController():
         #padding
         obstacle_grid_map = np.pad(obstacle_grid_map,(1,1), 'constant',constant_values=(1,1))
         box_existing_map = np.pad(box_existing_map,(1,1), 'constant',constant_values=(0,0))
-        
         box_grid = np.where(box_existing_map == np.amax(box_existing_map))
-        box_grid = [box_grid[0][0]+1,box_grid[1][0]+1]
+        box_grid = [box_grid[0][0],box_grid[1][0]]
 
 
 
